@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Event Profit Planner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="shell">
+    <header class="hero">
+      <p class="eyebrow">Micro-SaaS Finance Tool</p>
+      <h1>Event Profit Planner</h1>
+      <p class="subtitle">Считайте окупаемость мероприятия до запуска: выручка, прибыль, точка безубыточности и сценарии.</p>
+    </header>
+
+    <section class="grid">
+      <article class="card">
+        <h2>Доход</h2>
+        <label>Вместимость площадки <input id="capacity" type="number" min="1" value="120" /></label>
+        <label>Средняя заполняемость, % <input id="occupancy" type="number" min="1" max="100" value="75" /></label>
+        <label>Средняя цена билета, ₽ <input id="ticketPrice" type="number" min="0" value="2500" /></label>
+        <label>Спонсоры и партнеры, ₽ <input id="sponsors" type="number" min="0" value="50000" /></label>
+        <label>Доп. продажи (мерч/бар), ₽ <input id="extras" type="number" min="0" value="30000" /></label>
+      </article>
+
+      <article class="card">
+        <h2>Расходы</h2>
+        <label>Аренда площадки, ₽ <input id="venueCost" type="number" min="0" value="90000" /></label>
+        <label>Команда и персонал, ₽ <input id="staffCost" type="number" min="0" value="60000" /></label>
+        <label>Маркетинг, ₽ <input id="marketingCost" type="number" min="0" value="45000" /></label>
+        <label>Техника и продакшн, ₽ <input id="productionCost" type="number" min="0" value="50000" /></label>
+        <label>Прочие расходы, ₽ <input id="otherCost" type="number" min="0" value="25000" /></label>
+      </article>
+    </section>
+
+    <section class="actions">
+      <button id="calculateBtn">Рассчитать</button>
+      <button id="demoBtn" class="ghost">Демо кейс</button>
+      <button id="clearBtn" class="ghost">Сбросить</button>
+    </section>
+
+    <section id="results" class="results hidden">
+      <article class="metric">
+        <h3>Ожидаемая выручка</h3>
+        <p id="revenueValue">0 ₽</p>
+      </article>
+      <article class="metric">
+        <h3>Общие расходы</h3>
+        <p id="costValue">0 ₽</p>
+      </article>
+      <article class="metric">
+        <h3>Ожидаемая прибыль</h3>
+        <p id="profitValue">0 ₽</p>
+      </article>
+      <article class="metric">
+        <h3>Маржа</h3>
+        <p id="marginValue">0%</p>
+      </article>
+
+      <article class="card full">
+        <h3>Точка безубыточности</h3>
+        <p id="breakevenText"></p>
+      </article>
+
+      <article class="card full">
+        <h3>Сценарии</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Сценарий</th>
+              <th>Заполняемость</th>
+              <th>Цена билета</th>
+              <th>Прибыль</th>
+            </tr>
+          </thead>
+          <tbody id="scenarioTable"></tbody>
+        </table>
+      </article>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
