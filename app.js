@@ -5,6 +5,7 @@ const ids = [
 
 const elements = Object.fromEntries(ids.map((id) => [id, document.getElementById(id)]));
 const calculateBtn = document.getElementById("calculateBtn");
+const exportPdfBtn = document.getElementById("exportPdfBtn");
 const demoBtn = document.getElementById("demoBtn");
 const clearBtn = document.getElementById("clearBtn");
 const results = document.getElementById("results");
@@ -15,6 +16,13 @@ const profitValue = document.getElementById("profitValue");
 const marginValue = document.getElementById("marginValue");
 const breakevenText = document.getElementById("breakevenText");
 const scenarioTable = document.getElementById("scenarioTable");
+const pdfReport = document.getElementById("pdfReport");
+const pdfGeneratedAt = document.getElementById("pdfGeneratedAt");
+const pdfMetrics = document.getElementById("pdfMetrics");
+const pdfBreakeven = document.getElementById("pdfBreakeven");
+const pdfScenarioTable = document.getElementById("pdfScenarioTable");
+
+let lastCalculation = null;
 
 function num(value) {
   const parsed = Number(value);
@@ -61,17 +69,66 @@ function renderScenarios(state) {
     { name: "Оптимистичный", occ: 1.15, price: 1.08 }
   ];
 
+  const rows = [];
   scenarioTable.innerHTML = "";
   for (const s of scenarios) {
     const result = model(state, s.occ, s.price);
+    const occupancy = Math.min(100, Math.round(state.occupancy * s.occ));
+    const ticketPrice = state.ticketPrice * s.price;
+
     const tr = document.createElement("tr");
     tr.innerHTML = `
       <td>${s.name}</td>
-      <td>${Math.min(100, Math.round(state.occupancy * s.occ))}%</td>
-      <td>${formatRub(state.ticketPrice * s.price)}</td>
+      <td>${occupancy}%</td>
+      <td>${formatRub(ticketPrice)}</td>
       <td>${formatRub(result.profit)}</td>
     `;
     scenarioTable.appendChild(tr);
+
+    rows.push({
+      name: s.name,
+      occupancy,
+      ticketPrice,
+      profit: result.profit
+    });
+  }
+
+  return rows;
+}
+
+function renderPdfReport(snapshot) {
+  pdfGeneratedAt.textContent = `Сформирован: ${new Date(snapshot.generatedAt).toLocaleString("ru-RU")}`;
+
+  pdfMetrics.innerHTML = "";
+  const metrics = [
+    `Ожидаемая выручка: ${formatRub(snapshot.result.revenue)}`,
+    `Общие расходы: ${formatRub(snapshot.result.totalCost)}`,
+    `Ожидаемая прибыль: ${formatRub(snapshot.result.profit)}`,
+    `Маржа: ${snapshot.result.margin.toFixed(1)}%`
+  ];
+
+  for (const text of metrics) {
+    const li = document.createElement("li");
+    li.textContent = text;
+    pdfMetrics.appendChild(li);
+  }
+
+  if (!Number.isFinite(snapshot.breakeven.tickets) || !Number.isFinite(snapshot.breakeven.occupancy)) {
+    pdfBreakeven.textContent = "Точку безубыточности нельзя посчитать: цена билета <= 0.";
+  } else {
+    pdfBreakeven.textContent = `Для окупаемости нужно продать примерно ${Math.ceil(snapshot.breakeven.tickets)} билетов (${Math.min(999, snapshot.breakeven.occupancy).toFixed(1)}% от вместимости).`;
+  }
+
+  pdfScenarioTable.innerHTML = "";
+  for (const s of snapshot.scenarios) {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${s.name}</td>
+      <td>${s.occupancy}%</td>
+      <td>${formatRub(s.ticketPrice)}</td>
+      <td>${formatRub(s.profit)}</td>
+    `;
+    pdfScenarioTable.appendChild(tr);
   }
 }
 
@@ -91,7 +148,17 @@ function calculate() {
     breakevenText.textContent = `Для окупаемости нужно продать примерно ${Math.ceil(be.tickets)} билетов (${Math.min(999, be.occupancy).toFixed(1)}% от вместимости).`;
   }
 
-  renderScenarios(state);
+  const scenarios = renderScenarios(state);
+
+  lastCalculation = {
+    generatedAt: Date.now(),
+    state,
+    result,
+    breakeven: be,
+    scenarios
+  };
+
+  renderPdfReport(lastCalculation);
   results.classList.remove("hidden");
 }
 
@@ -124,8 +191,26 @@ function resetAll() {
   elements.occupancy.value = 75;
   elements.ticketPrice.value = 2500;
   results.classList.add("hidden");
+  pdfReport.classList.add("hidden");
+  lastCalculation = null;
+}
+
+function exportPdf() {
+  if (!lastCalculation) {
+    calculate();
+  }
+
+  if (!lastCalculation) {
+    return;
+  }
+
+  renderPdfReport(lastCalculation);
+  pdfReport.classList.remove("hidden");
+  window.print();
+  pdfReport.classList.add("hidden");
 }
 
 calculateBtn.addEventListener("click", calculate);
+exportPdfBtn.addEventListener("click", exportPdf);
 demoBtn.addEventListener("click", loadDemo);
 clearBtn.addEventListener("click", resetAll);

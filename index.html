@@ -39,6 +39,7 @@
 
     <section class="actions">
       <button id="calculateBtn">Рассчитать</button>
+      <button id="exportPdfBtn">Export PDF</button>
       <button id="demoBtn" class="ghost">Демо кейс</button>
       <button id="clearBtn" class="ghost">Сбросить</button>
     </section>
@@ -80,6 +81,30 @@
           <tbody id="scenarioTable"></tbody>
         </table>
       </article>
+    </section>
+
+    <section id="pdfReport" class="pdf-report hidden">
+      <h2>Event Profit Planner Report</h2>
+      <p id="pdfGeneratedAt"></p>
+
+      <h3>Ключевые метрики</h3>
+      <ul id="pdfMetrics"></ul>
+
+      <h3>Точка безубыточности</h3>
+      <p id="pdfBreakeven"></p>
+
+      <h3>Сценарии</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Сценарий</th>
+            <th>Заполняемость</th>
+            <th>Цена билета</th>
+            <th>Прибыль</th>
+          </tr>
+        </thead>
+        <tbody id="pdfScenarioTable"></tbody>
+      </table>
     </section>
   </main>
 

@@ -122,6 +122,52 @@ th, td {
   border-bottom: 1px solid var(--line);
 }
 
+.pdf-report {
+  margin-top: 24px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 18px;
+}
+
+.pdf-report h2 {
+  margin: 0 0 6px;
+}
+
+.pdf-report p {
+  margin: 8px 0;
+}
+
+.pdf-report ul {
+  margin: 8px 0 14px;
+}
+
+@media print {
+  body {
+    background: #fff;
+  }
+
+  .hero,
+  .grid,
+  .actions,
+  #results {
+    display: none !important;
+  }
+
+  .shell {
+    width: 100%;
+    margin: 0;
+  }
+
+  .pdf-report {
+    display: block !important;
+    margin: 0;
+    border: none;
+    border-radius: 0;
+    padding: 0;
+  }
+}
+
 @media (max-width: 980px) {
   .grid { grid-template-columns: 1fr; }
   .results { grid-template-columns: repeat(2, minmax(0, 1fr)); }
